@@ -219,16 +219,38 @@ cat <<'EOF' >  roles/clone-ubuntu-server-dockerfile/tasks/main.yml
 
 EOF
 
-cat <<'EOF' >  /main.yml
+cat <<'EOF' >  roles/mysqlserver-icinga2-client/tasks/main.yml
 
 
 
 EOF
-cat <<'EOF' >  /main.yml
+
+cat <<'EOF' >  roles/webserver-icinga2-client/tasks/main.yml
 
 
 
 EOF
+
+cat <<'EOF' >  roles/ec2-instance-awscli/tasks/main.yml
+
+
+
+EOF
+cat <<'EOF' >  roles/icingaweb2-configuraion/tasks/main.yml
+
+
+
+EOF
+
+
+#cat <<'EOF' >  /main.yml
+
+
+
+#EOF
+
+
+
 
 cat <<'EOF' >  create_icinga2db.sh
 #!/bin/bash
