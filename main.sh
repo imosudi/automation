@@ -191,6 +191,37 @@ cat <<'EOF' >  roles/webserver-icinga2-client/webservices.conf
 EOF
 
 
+cat <<'EOF' >  roles/mysqlserver-icinga2-client/dbservices.conf
+
+apply Service "MySQL - DB Monitor" {
+				   import "generic-service"
+				   check_command = "mysql"
+				   vars.mysql_database = "mysql"
+				   assign where host.name == NodeName
+				}
+
+
+EOF
+
+cat <<'EOF' >  roles/mysqlserver-icinga2-clientdbhosts.conf
+
+
+	object Host NodeName {
+		import "generic-host"
+	//      address = "dbserver.mosudi"
+		address = "127.0.0.1"
+		address6 = "::1"
+		vars.os = "Linux"
+		check_command = "mysql"
+		vars.mysql_database = "mysql"
+		vars.mysql_username = "root"
+		vars.mysql_password = "mysqlrootpassword"
+		}
+EOF
+
+mysqlserver-icinga2-client/dbservices
+
+
 
 
 
