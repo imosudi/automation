@@ -80,6 +80,15 @@ wait_for_port: 22
 
 EOF
 
+cat <<'EOF' > roles/create-ec2-instance/tasks/main.yml
+- name: Create Ec2 Instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+
+EOF
+
 cat <<'EOF' >  create_icinga2db.sh
 #!/bin/bash
 
