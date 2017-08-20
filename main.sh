@@ -6,6 +6,9 @@ git add webserver/  > /dev/null 2>&1
 git add dbserver/  > /dev/null 2>&1
 git add backup_scripts/  > /dev/null 2>&1
 
+
+
+
 }
 ##End of my function - deploy
 
