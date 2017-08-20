@@ -220,25 +220,298 @@ cat <<'EOF' >  roles/clone-ubuntu-server-dockerfile/tasks/main.yml
 EOF
 
 cat <<'EOF' >  roles/mysqlserver-icinga2-client/tasks/main.yml
+### LAB MYSQL DB SERVER
+    - name: Replace with DBDockerfile
+      become: yes
+      become_method: sudo
+      copy: src=dbserver/DBDockerfile dest=/home/ubuntu/ubuntu/Dockerfile mode=0777
 
+    - name: Building Ubuntu 14.04 Mysql DB server  dockerfile 
+      become: yes
+      become_method: sudo
+      shell: bash -c 'docker build -t="dockerfile/ubuntu" /home/ubuntu/ubuntu/'
+      args:
+        chdir: /home/ubuntu/
+
+    - name: Fetch db_lab_server.sh for configuration dbserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=dbserver/db_lab_server.sh dest=/home/ubuntu/db_lab_server.sh mode=0777
+
+
+    - name: Fetch host.conf for Icinga2 configuration dbserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=dbserver/dbhosts.conf dest=/home/ubuntu/dbhosts.conf mode=0777
+
+    - name: Fetch services.conf for Icinga2 configuration dbserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=dbserver/dbservices.conf dest=/home/ubuntu/dbservices.conf mode=0777
+
+    - name: Fetch create_icinga2db.sh for Icinga2 configuration dbserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=dbserver/create_icinga2db.sh dest=/home/ubuntu/create_icinga2db.sh mode=0777
+
+
+    - name: Creating ubuntu 14.04 Mysql Database server docker container with hostname dbserver.mosudi
+      become: yes
+      become_method: sudo 
+      shell: /home/ubuntu/db_lab_server.sh
+      args:
+        chdir: /home/ubuntu/
+#      register: db_lab_container
 
 
 EOF
 
 cat <<'EOF' >  roles/webserver-icinga2-client/tasks/main.yml
+### LAB APACHE WEB SERVER
+    - name: Replace with WebDockerfile
+      become: yes
+      become_method: sudo
+      copy: src=webserver/WebDockerfile dest=/home/ubuntu/ubuntu/Dockerfile mode=0777
 
+    - name:  Building Ubuntu 14.04 Apache2 Web server  dockerfile
+      become: yes
+      become_method: sudo 
+      shell: bash -c 'docker build -t="dockerfile/ubuntu" /home/ubuntu/ubuntu/'
+      args:
+        chdir: /home/ubuntu/
+
+    - name: Fetch web_lab_server.sh for configuration webserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=webserver/web_lab_server.sh dest=/home/ubuntu/web_lab_server.sh mode=0777
+
+    - name: Fetch host.conf for Icinga2 configuration webserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=webserver/webhosts.conf dest=/home/ubuntu/webhosts.conf mode=0777
+
+    - name: Fetch services.conf for Icinga2 configuration webserver.mosudi docker container
+      become: yes
+      become_method: sudo
+      copy: src=webserver/webservices.conf dest=/home/ubuntu/webservices.conf mode=0777
+
+    - name: Creating ubuntu 14.04 Apache2 Web server docker container with hostname webserver.mosudi
+      become: yes
+      become_method: sudo 
+      shell: /home/ubuntu/web_lab_server.sh
+      args:
+        chdir: /home/ubuntu/
+#     register: web_lab_container
 
 
 EOF
 
 cat <<'EOF' >  roles/ec2-instance-awscli/tasks/main.yml
 
+    - name: Creating Backup Directory For Icinga2 master database
+      become: yes
+      become_method: sudo
+      command: bash -c "mkdir /root/backup && mkdir /root/backup/icinga2master"
 
+
+    - name: Creating Backup Directory For Icinga 2 client/satellite node dbserver
+      become: yes
+      become_method: sudo
+      command: bash -c "mkdir /root/backup/dbserver"
+
+
+    - name: Creating Backup Script Directory 
+      become: yes
+      become_method: sudo
+      command: bash -c " mkdir /root/backup_scripts"
+
+
+    - name: Fetch Icinga2 Master Database Backup Script
+      become: yes
+      become_method: sudo
+      copy: src=backup_scripts/icinga2master_dbbackup.sh dest=/root/backup_scripts/icinga2master_dbbackup.sh mode=0777
+
+
+    - name: Fetch Icinga2 Database Server Backup Script
+      become: yes
+      become_method: sudo
+      copy: src=backup_scripts/dbserverbackup.sh dest=/root/backup_scripts/dbserverbackup.sh mode=0777
+
+    - name: Fetch Amazon S3 Backup Script
+      become: yes
+      become_method: sudo
+      copy: src=backup_scripts/s3backupscript.sh dest=/root/backup_scripts/s3backupscript.sh mode=0777
+
+    - name: Fetch Amazon AWS CLI Configuration Script
+      become: yes
+      become_method: sudo
+      copy: src=backup_scripts/aws_cli.sh dest=/root/backup_scripts/aws_cli.sh mode=0777
+#     notify:
+#       - delete access_key aws_cli 
+#       - delete secret_key aws_cli 
+#       - git add aws_cli.sh
+#notify: delete access_key aws_cli 
+#notify: delete secret_key aws_cli 
+#notify: git add aws_cli.sh 
+
+
+
+    - name: Fetch Amazon S3 Backup CRON Script
+      become: yes
+      become_method: sudo
+      copy: src=backup_scripts/cron_job dest=/root/backup_scripts/cron_job mode=0777
+
+    - name: Configure aws CLI  
+      become: yes
+      become_method: sudo
+      command: bash -c " /root/backup_scripts/aws_cli.sh "
+
+    - name: Creating Bucket named "imosudi"  
+      become: yes
+      become_method: sudo
+      command: bash -c " aws s3 mb s3://imosudi "
+
+    - name: Setup CRON JOB  
+      become: yes
+      become_method: sudo
+      command: bash -c " crontab /root/backup_scripts/cron_job "
+
+    - name: Update all packages to the latest version
+      become: yes
+      become_method: sudo
+      apt:
+        upgrade: dist
+
+
+
+#notify: git commit project
 
 EOF
+
 cat <<'EOF' >  roles/icingaweb2-configuraion/tasks/main.yml
 
+########## ICINGA2 MASTER
+    - name: Setting Up Icinga2 DB root password
+      become: yes
+      become_method: sudo
+      script: create_icinga2db.sh
+      #script will reside within the Ansible master
 
+
+    - name: Start mysql service
+      become: yes
+      become_method: sudo
+      service: name=mysql state=reloaded
+
+    - name: Start Apache2 service
+      become: yes
+      become_method: sudo
+      service: name=apache2 state=reloaded
+
+    - name: Start Icinga2
+      become: yes
+      become_method: sudo
+      command: "icinga2 daemon -C"
+
+    - name: Enable Icinga2 features
+      become: yes
+      become_method: sudo
+      command: "icinga2 feature enable ido-mysql statusdata command perfdata"
+
+    - name: Restart icinga2
+      become: yes
+      become_method: sudo
+      service: name=icinga2 state=reloaded
+
+    - name: Creating Group Nagios 
+      become: yes
+      become_method: sudo
+      command: addgroup --system nagios
+    - name: Adding Nagios and also www-data
+      become: yes
+      become_method: sudo
+      command: usermod -a -G nagios www-data
+    - name: Setup config directory
+      become: yes
+      become_method: sudo
+      command: "icingacli setup config directory --group nagios"
+
+    - name: Making Icinga2 Web Folder Writeable
+      become: yes
+      become_method: sudo
+      command: chmod -R 777 /etc/icingaweb2/
+#     command: bash -c "chcon -R -t httpd_sys_content_t /etc/icingaweb2/"
+#     notify:
+#       - start icinga2
+#       - start mysql
+#       - start apache2
+
+    - name: Start Apace2 service
+      become: yes
+      become_method: sudo
+      service: name=apache2 state=reloaded
+
+    - name: Create Icinga2 Web Token
+      become: yes
+      become_method: sudo
+      command: icingacli setup token create
+
+    - name: Create Icinga2 Web Token
+      become: yes
+      become_method: sudo
+      command: bash -c "icingacli setup token show | cut -d':' -f2 | sed -e 's/^[ \t]*//'"
+      register: out
+    - name: Ido-mysql database username
+      become: yes
+      become_method: sudo
+      command: bash -c "grep user /etc/icinga2/features-enabled/ido-mysql.conf | tr -d ','| cut -d'=' -f2"
+      register: ido_db_username
+
+    - name: Ido-mysql database dbname
+      become: yes
+      become_method: sudo
+      command: bash -c "grep database /etc/icinga2/features-enabled/ido-mysql.conf | tr -d ','| cut -d'=' -f2 "
+      register: ido_db_name
+      
+    - name: Ido-mysql database password
+      become: yes
+      become_method: sudo
+      command: bash -c "grep password /etc/icinga2/features-enabled/ido-mysql.conf | tr -d ','| cut -d'=' -f2"
+      register: ido_db_password
+
+    - name: Ido-mysql database host
+      become: yes
+      become_method: sudo
+      command: bash -c "grep host /etc/icinga2/features-enabled/ido-mysql.conf | tr -d ','| cut -d'=' -f2"
+      register: ido_db_host
+
+    - name: Icinga2 Web Token
+      debug: var=out.stdout_lines
+
+    - name: Ido-mysql database username
+      debug: var=ido_db_username.stdout_lines
+
+    - name: Ido-mysql database dbname
+      debug: var=ido_db_name.stdout_lines
+
+    - name: Ido-mysql database password
+      debug: var=ido_db_password.stdout_lines
+
+    - name: Ido-mysql database host
+      debug: var=ido_db_host.stdout_lines
+
+
+  handlers:
+    - name: update timezone
+      become: yes
+      become_method: sudo
+      command: dpkg-reconfigure --frontend noninteractive tzdata
+
+ 
+    - name: restart cron
+      become: yes
+      become_method: sudo
+      command: service cron restart > /dev/null 2>&1
 
 EOF
 
