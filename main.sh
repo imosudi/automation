@@ -9,19 +9,47 @@ mkdir roles/create-ec2-instance
 mkdir roles/create-ec2-instance/handlers && mkdir roles/create-ec2-instance/tasks 
 rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
 mkdir roles/create-ec2-instance/handlers roles/create-ec2-instance/tasks
+
+mkdir roles/ssh-wait-add-instace-to-inventory
 mkdir roles/ssh-wait-add-instace-to-inventory/handlers roles/ssh-wait-add-instace-to-inventory/tasks
+
+mkdir roles/update-with-new-ec2-parameters
 mkdir roles/update-with-new-ec2-parameters/handlers roles/update-with-new-ec2-parameters/tasks
+
+mkdir roles/ec2-instance-update
 mkdir roles/ec2-instance-update/handlers roles/ec2-instance-update/tasks
+
+mkdir roles/create-swap-space
 mkdir roles/create-swap-space/handlers roles/create-swap-space/tasks
+
+mkdir roles/ec2-instance-docker-icinga2-requirement
 mkdir roles/ec2-instance-docker-icinga2-requirement/handlers roles/ec2-instance-docker-icinga2-requirement/tasks
+
+mkdir roles/ec2-instance-timezone-localtime
 mkdir roles/ec2-instance-timezone-localtime/handlers roles/ec2-instance-timezone-localtime/tasks
+
+mkdir roles/ec2-instance-docker-installtion
 mkdir roles/ec2-instance-docker-installtion/handlers roles/ec2-instance-docker-installtion/tasks
+
+mkdir roles/ec2-instance-icinga2-installation
 mkdir roles/ec2-instance-icinga2-installation/handlers roles/ec2-instance-icinga2-installation/tasks
+
+mkdir roles/amazon-s3-cronjob-conf
 mkdir roles/amazon-s3-cronjob-conf/handlers roles/amazon-s3-cronjob-conf/tasks
+
+mkdir roles/clone-ubuntu-server-dockerfile
 mkdir roles/clone-ubuntu-server-dockerfile/handlers roles/clone-ubuntu-server-dockerfile/tasks
+
+mkdir roles/mysqlserver-icinga2-client
 mkdir roles/mysqlserver-icinga2-client/handlers roles/mysqlserver-icinga2-client/tasks
+
+mkdir roles/webserver-icinga2-client
 mkdir roles/webserver-icinga2-client/handlers  roles/webserver-icinga2-client/tasks
+
+mkdir roles/ec2-instance-awscli
 mkdir roles/ec2-instance-awscli/handlers roles/ec2-instance-awscli/tasks
+
+mkdir roles/icingaweb2-configuraion
 mkdir roles/icingaweb2-configuraion/handlers roles/icingaweb2-configuraion/tasks
 
 
