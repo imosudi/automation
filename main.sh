@@ -86,8 +86,112 @@ cat <<'EOF' > roles/create-ec2-instance/tasks/main.yml
   connection: local
   gather_facts: False
 
+  ec2: 
+    access_key="{{ ec2_access_key }}"
+    secret_key="{{ ec2_secret_key }}"
+    keypair="{{ ec2_keypair }}"
+    group="{{ ec2_security_group }}"
+    type="{{ ec2_instance_type }}"
+    image="{{ ec2_image }}"
+    region="{{ ec2_region }}"
+    instance_tags="{'Name':'{{ ec2_tag }}'}"
+    count="{{ ec2_instance_count }}"
+    wait=true 
+  register: ec2
+
 
 EOF
+
+cat <<'EOF' > roles/ssh-wait-add-instace-to-inventory/tasks/maiN.yml
+- name: Wait for SSH to come up
+   wait_for:
+    host: "{{ item.public_dns_name }}"
+     port: 22
+     delay: 60
+     timeout: 320
+     state: started
+   with_items : "{{ ec2.instances }}"
+   when: ec2 
+
+- name: accept new ssh fingerprints                                         
+   shell: ssh-keyscan -H {{ item.public_ip }} >> ~/.ssh/known_hosts          
+   with_items: '{{ ec2.instances }}'
+
+- name: Add all instance public IP Address to host group
+   add_host: 
+#    hostname: "{{ item.public_dns_name }}"
+     hostname: "{{ item.public_ip }}"
+     groups: ec2hosts
+   with_items: "{{ ec2.instances }}"
+
+
+##APPEND NEW EC2 HOSTNAME TO /ETC/ANSIBLE/HOSTS
+ - name: Generate Inventory Parameters for new ec2 host
+   lineinfile: dest=/etc/ansible/hosts line="{{ item.public_ip }} ansible_ssh_user=ubuntu  ansible_ssh_private_key_file=mioemi2000.pem  mysql_root_password=mysqlrootpassword" state=present
+      with_items: "{{ ec2.instances }}"
+
+### EDITING  web_lab_server.sh script
+    - name: Replacing the public Hostname in web_lab_server.sh script
+      lineinfile: 
+        dest: webserver/web_lab_server.sh
+        regexp: '^(.*)lab_gateway_public_hostname=(.*)$' 
+        line: 'lab_gateway_public_hostname={{ item.public_dns_name }}'
+        backrefs: yes
+      with_items: "{{ ec2.instances }}"
+
+    - name: Replacing the public IP Address in web_lab_server.sh script
+      lineinfile: 
+        dest: webserver/web_lab_server.sh
+        regexp: '^(.*)lab_gateway_public_ip=(.*)$' 
+        line: 'lab_gateway_public_ip={{ item.public_ip }}'
+        backrefs: yes
+      with_items: "{{ ec2.instances }}"
+
+### EDITING  db_lab_server.sh script
+    - name: Replacing the public Hostname in db_lab_server.sh script
+      lineinfile: 
+        dest: dbserver/db_lab_server.sh
+        regexp: '^(.*)lab_gateway_public_hostname=(.*)$' 
+        line: 'lab_gateway_public_hostname={{ item.public_dns_name }}'
+        backrefs: yes
+      with_items: "{{ ec2.instances }}"
+
+    - name: Replacing the public Hostname in db_lab_server.sh script
+      lineinfile: 
+        dest: dbserver/db_lab_server.sh
+        regexp: '^(.*)lab_gateway_public_ip=(.*)$' 
+        line: 'lab_gateway_public_ip={{ item.public_ip }}'
+        backrefs: yes
+      with_items: "{{ ec2.instances }}"
+
+
+EOF
+
+cat <<'EOF' > roles/ec2-instance-update/tasks/main.yml
+
+
+EOF
+
+cat <<'EOF' > main.yml
+
+
+
+EOF
+
+
+cat <<'EOF' > main.yml
+
+
+
+EOF
+
+
+cat <<'EOF' > main.yml
+
+
+
+EOF
+
 
 cat <<'EOF' >  create_icinga2db.sh
 #!/bin/bash
