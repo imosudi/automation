@@ -1,18 +1,29 @@
 
----
-- name: AWS EC2 Instance Configuration Deploment and Orchestration by MOSUDI ISIAKA (imosudi@gmail.com|http://www.mioemi.com)
-  hosts: localhost
-  connection: local
-  gather_facts: False
+--- 
+- name: AWS EC2 Instance Configuration Deploment and Orchestration by MOSUDI ISIAKA (imosudi@gmail.com|http://www.mioemi.com) }$
+  hosts: localhost 
+  connection: local 
+  gather_facts: False 
+ 
+  vars_files: 
+    - /vars/ec2_secrets.yml 
+ 
+  roles: 
+    - {role:  create-ec2-instance }
+    - {role:  ssh-wait-add-instace-to-inventory }
+    - {role:  update-with-new-ec2-parameters }
+    - {role:  ec2-instance-update }
+    - {role:  create-swap-space }
+    - {role:  ec2-instance-docker-icinga2-requirement }
+    - {role:  ec2-instance-timezone-localtime }  
+    - {role:  ec2-instance-docker-installtio }
+    - {role:  ec2-instance-icinga2-installation }  
+    - {role:  amazon-s3-cronjob-conf }
+    - {role:  clone-ubuntu-server-dockerfile }
+    - {role:  webserver-icinga2-client }
+    - {role:  mysqlserver-icinga2-client }
+    - {role:  ec2-instance-awscli }
+    - {role:  icingaweb2-configuraion }
 
-  vars_files:
-    - /vars/ec2_secrets.yml
 
-  roles:
-    - {role: update}
-    - {role: install-minimal-packages}
-    - {role: create-new-user}
-    - {role: basic-server-hardening}
-    - {role: vimrc-server-flavor}
-    - {role: pip}
 
