@@ -25,13 +25,14 @@ EOF
 
 chmod +x  create_icinga2db.sh
 
-cp  create_icinga2db.sh  dbserver/create_icinga2db.sh
+cp  create_icinga2db.sh  roles/mysqlserver-icinga2-client/create_icinga2db.sh
 
 git add  create_icinga2db.sh  > /dev/null 2>&1
 
 
 #Git ADD
 git add vars/ > /dev/null 2>&1
+git add roles/ > /dev/null 2>&1
 git add webserver/  > /dev/null 2>&1
 git add dbserver/  > /dev/null 2>&1
 git add backup_scripts/  > /dev/null 2>&1
