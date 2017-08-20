@@ -61,7 +61,7 @@ rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts
 rm -rf vars  > /dev/null 2>&1 && mkdir vars 
 
 #Creating/recreating deployment files and scripts
-cat <<'EOF' >  /vars/ec2_secrets.yml
+cat <<'EOF' >  vars/ec2_secrets.yml
 
 # prefix for naming
 prefix: staging
