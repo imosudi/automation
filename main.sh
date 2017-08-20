@@ -172,26 +172,63 @@ cat <<'EOF' > roles/ec2-instance-update/tasks/main.yml
 
 EOF
 
-cat <<'EOF' > main.yml
+cat <<'EOF' > roles/create-swap-space/tasks/main.yml
 
 
 
 EOF
 
 
-cat <<'EOF' > main.yml
+cat <<'EOF' > roles/ec2-instance-docker-icinga2-requirement/tasks/main.yml
 
 
 
 EOF
 
 
-cat <<'EOF' > main.yml
+cat <<'EOF' >  roles/ec2-instance-timezone-localtime/tasks/main.yml
 
 
 
 EOF
 
+
+cat <<'EOF' >  role/ec2-instance-docker-installtion/tasks/main.yml
+
+
+
+EOF
+
+
+cat <<'EOF' >  role/ec2-instance-icinga2-installation/tasks/main.yml
+
+
+
+EOF
+
+
+cat <<'EOF' >  roles/amazon-s3-cronjob-conf/tasks/main.yml
+
+
+
+EOF
+
+cat <<'EOF' >  roles/clone-ubuntu-server-dockerfile/tasks/main.yml
+
+
+
+EOF
+
+cat <<'EOF' >  /main.yml
+
+
+
+EOF
+cat <<'EOF' >  /main.yml
+
+
+
+EOF
 
 cat <<'EOF' >  create_icinga2db.sh
 #!/bin/bash
