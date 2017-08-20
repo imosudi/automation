@@ -6,7 +6,7 @@ function deploy {
 rm -rf roles  > /dev/null 2>&1 && mkdir roles 
 mkdir roles/create-ec2-instance 
 
-rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
+#rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
 mkdir roles/create-ec2-instance/handlers roles/create-ec2-instance/tasks
 
 mkdir roles/ssh-wait-add-instace-to-inventory
