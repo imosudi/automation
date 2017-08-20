@@ -6,6 +6,9 @@ function deploy {
 rm -rf roles  > /dev/null 2>&1 && mkdir roles 
 mkdir roles/create-ec2-instance 
 mkdir roles/create-ec2-instance/handlers && mkdir roles/create-ec2-instance/tasks 
+rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
+rm -rf roles/mysqlserver-icinga2-client && mkdir roles/mysqlserver-icinga2-client
+
 rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  
 rm -rf dbserver  > /dev/null 2>&1 && mkdir dbserver 
 rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts 
@@ -285,7 +288,7 @@ apply Service "MySQL - DB Monitor" {
 
 EOF
 
-cat <<'EOF' >  roles/mysqlserver-icinga2-clientdbhosts.conf
+cat <<'EOF' >  roles/mysqlserver-icinga2-clientdb/hosts.conf
 
 
 	object Host NodeName {
@@ -383,6 +386,55 @@ EOF
 
 chmod +x roles/mysqlserver-icinga2-client/db_lab_server.sh
 
+
+cat <<'EOF' > backup_scripts/icinga2master_dbbackup.sh
+#!/bin/bash
+
+#rm -rf /root/backup/icinga2master  > /dev/null 2>&1 && mkdir /root/backup/icinga2master
+ 
+USER="root"
+PASSWORD="mysqlrootpassword"
+OUTPUT=/root/backup/icinga2master
+ 
+rm $OUTPUT/*.gz > /dev/null 2>&1
+ 
+databases=`mysql --user=$USER --password=$PASSWORD -e "SHOW DATABASES;" | tr -d "| " | grep -v Database`
+ 
+for dbitem in $databases; do
+    if [[ "$dbitem" != "information_schema" ]] && [[ "$dbitem" != _* ]] ; then
+        echo "Dumping database: $dbitem"
+        mysqldump --force --opt --user=$USER --password=$PASSWORD --databases $dbitem > $OUTPUT/`date +%Y%m%d`.$dbitem.sql
+        gzip $OUTPUT/`date +%Y%m%d`.$dbitem.sql
+    fi
+done
+
+EOF
+
+chmod +x backup_scripts/icinga2master_dbbackup.sh
+
+cat <<'EOF' > backup_scripts/dbserverbackup.sh
+#!/bin/bash
+
+#rm -rf /root/backup/dbserver  > /dev/null 2>&1 && mkdir /root/backup/dbserver
+ 
+DBHOST="dbserver.mosudi"
+USER="root"
+PASSWORD="mysqlrootpassword"
+OUTPUT=/root/backup/dbserver
+ 
+rm $OUTPUT/*.gz > /dev/null 2>&1
+ 
+databases=`mysql --host=$DBHOST --user=$USER --password=$PASSWORD -e "SHOW DATABASES;" | tr -d "| " | grep -v Database`
+ 
+for dbitem in $databases; do
+    if [[ "$dbitem" != "information_schema" ]] && [[ "$dbitem" != _* ]] ; then
+        echo "Dumping database: $dbitem"
+        mysqldump --force --opt --user=$USER --password=$PASSWORD --databases $dbitem > $OUTPUT/`date +%Y%m%d`.$dbitem.sql
+        gzip $OUTPUT/`date +%Y%m%d`.$dbitem.sql
+    fi
+done
+
+EOF
 
 
 #Git ADD
