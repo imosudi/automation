@@ -1,7 +1,16 @@
 #!/bin/bash
 
 function deploy {
-rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  && rm -rf dbserver  > /dev/null 2>&1 && mkdir dbserver && rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts 
+
+#Creating or recreating deployment directories
+rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  && rm -rf dbserver  > /dev/null 2>&1 && mkdir dbserver && rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts && rm -rf vars  > /dev/null 2>&1 && mkdir vars 
+
+#Creating/recreating deployment files and scripts
+touch /vars/ec2_secrets.yml
+
+
+#Git ADD
+git add vars/ > /dev/null 2>&1
 git add webserver/  > /dev/null 2>&1
 git add dbserver/  > /dev/null 2>&1
 git add backup_scripts/  > /dev/null 2>&1
