@@ -8,3 +8,11 @@
   vars_files:
     - /vars/ec2_secrets.yml
 
+  roles:
+    - {role: update}
+    - {role: install-minimal-packages}
+    - {role: create-new-user}
+    - {role: basic-server-hardening}
+    - {role: vimrc-server-flavor}
+    - {role: pip}
+
