@@ -1,4 +1,3 @@
-
 --- 
 - name: AWS EC2 Instance Configuration Deploment and Orchestration by MOSUDI ISIAKA (imosudi@gmail.com|http://www.mioemi.com)
   hosts: localhost 
