@@ -352,7 +352,7 @@ apply Service "MySQL - DB Monitor" {
 
 EOF
 
-cat <<'EOF' >  roles/mysqlserver-icinga2-clientdb/hosts.conf
+cat <<'EOF' >  roles/mysqlserver-icinga2-client/hosts.conf
 
 
 	object Host NodeName {
