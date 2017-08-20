@@ -157,6 +157,42 @@ EOF
 
 chmod +x roles/webserver-icinga2-client/web_lab_server.sh
 
+cat <<'EOF' > roles/webserver-icinga2-client/webhosts.conf
+
+
+object Host NodeName {
+  import "generic-host"
+  address = "127.0.0.1"
+  address6 = "::1"
+  vars.os = "Linux"
+  vars.http_vhosts["http"] = {
+    http_uri = "/"
+  }
+  vars.notification["mail"] = {
+    groups = [ "icingaadmins" ]
+  }
+}
+
+EOF
+
+
+cat <<'EOF' >  roles/webserver-icinga2-client/webservices.conf
+
+
+
+		apply Service for (http_vhost => config in host.vars.http_vhosts) {
+		  import "generic-service"
+
+		  check_command = "http"
+
+		  vars += config
+		}
+
+EOF
+
+
+
+
 
 #Git ADD
 git add vars/ > /dev/null 2>&1
