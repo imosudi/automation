@@ -476,12 +476,9 @@ EOF
 
 
 #Git ADD
-git add vars/ > /dev/null 2>&1
-git add roles/ > /dev/null 2>&1
-git add webserver/  > /dev/null 2>&1
-git add dbserver/  > /dev/null 2>&1
-git add backup_scripts/  > /dev/null 2>&1
+git add . > /dev/null 2>&1
 
+git commit -am "Project Update $(date +-%c)"
 
 }
 ##End of my function - deploy
