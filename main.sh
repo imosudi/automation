@@ -5,8 +5,11 @@ function deploy {
 #Creating or recreating deployment directories
 rm -rf roles  > /dev/null 2>&1 && mkdir roles 
 mkdir roles/create-ec2-instance 
+
 mkdir roles/create-ec2-instance/handlers && mkdir roles/create-ec2-instance/tasks 
 rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
+mkdir roles/webserver-icinga2-client/handlers  roles/webserver-icinga2-client/tasks
+
 rm -rf roles/mysqlserver-icinga2-client && mkdir roles/mysqlserver-icinga2-client
 
 rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  
