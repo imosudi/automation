@@ -436,6 +436,44 @@ done
 
 EOF
 
+chmod +x backup_scripts/dbserverbackup.sh
+
+cat <<'EOF' >backup_scripts/aws_cli.sh
+#!/bin/bash
+aws configure set aws_access_key_id 
+aws configure set aws_secret_access_key 
+aws configure set output json
+aws configure set region us-west-2
+
+EOF
+
+chmod +x backup_scripts/aws_cli.sh
+sed -i "s/aws configure set aws_access_key_id/aws configure set aws_access_key_id $AWSAccessKeyId/g" backup_scripts/aws_cli.sh
+sed -i "s/aws configure set aws_secret_access_key/aws configure set aws_secret_access_key $AWSSecretKey/g" backup_scripts/aws_cli.sh
+
+cat <<'EOF' >backup_scripts/s3backupscript.sh
+#!/bin/bash
+/root/backup_scripts/icinga2master_dbbackup.sh
+/root/backup_scripts/dbserverbackup.sh
+aws s3 sync /var/spool/icinga2/perfdata/ s3://imosudi/perfdata
+
+aws s3 sync /root/backup/  s3://imosudi/db_backup
+
+EOF
+
+chmod +x backup_scripts/s3backupscript.sh
+
+cat <<'EOF' >backup_scripts/cron_job
+#Anacron style
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#This runs at 7 PM daily
+0 19 * * *   /root/backup_scripts/s3backupscript.sh
+
+EOF
+
+
 
 #Git ADD
 git add vars/ > /dev/null 2>&1
@@ -443,8 +481,6 @@ git add roles/ > /dev/null 2>&1
 git add webserver/  > /dev/null 2>&1
 git add dbserver/  > /dev/null 2>&1
 git add backup_scripts/  > /dev/null 2>&1
-
-
 
 
 }
