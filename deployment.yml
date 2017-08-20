@@ -15,7 +15,7 @@
     - {role:  create-swap-space }
     - {role:  ec2-instance-docker-icinga2-requirement }
     - {role:  ec2-instance-timezone-localtime }  
-    - {role:  ec2-instance-docker-installtio }
+    - {role:  ec2-instance-docker-installtion }
     - {role:  ec2-instance-icinga2-installation }  
     - {role:  amazon-s3-cronjob-conf }
     - {role:  clone-ubuntu-server-dockerfile }

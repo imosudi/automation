@@ -3,10 +3,31 @@
 function deploy {
 
 #Creating or recreating deployment directories
-rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  && rm -rf dbserver  > /dev/null 2>&1 && mkdir dbserver && rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts && rm -rf vars  > /dev/null 2>&1 && mkdir vars 
+rm -rf roles  > /dev/null 2>&1 && mkdir roles 
+mkdir roles/create-ec2-instance 
+mkdir roles/create-ec2-instance/handlers && mkdir roles/create-ec2-instance/tasks 
+rm -rf webserver  > /dev/null 2>&1 && mkdir webserver  
+rm -rf dbserver  > /dev/null 2>&1 && mkdir dbserver 
+rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts 
+rm -rf vars  > /dev/null 2>&1 && mkdir vars 
 
 #Creating/recreating deployment files and scripts
 touch /vars/ec2_secrets.yml
+
+cat <<'EOF' >  create_icinga2db.sh
+#!/bin/bash
+
+password=mysqlrootpassword
+
+mysqladmin -u root password $password
+
+EOF
+
+chmod +x  create_icinga2db.sh
+
+cp  create_icinga2db.sh  dbserver/create_icinga2db.sh
+
+git add  create_icinga2db.sh  > /dev/null 2>&1
 
 
 #Git ADD
