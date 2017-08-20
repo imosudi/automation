@@ -8,7 +8,22 @@ mkdir roles/create-ec2-instance
 
 mkdir roles/create-ec2-instance/handlers && mkdir roles/create-ec2-instance/tasks 
 rm -rf roles/webserver-icinga2-client && mkdir roles/webserver-icinga2-client
+mkdir roles/create-ec2-instance/handlers roles/create-ec2-instance/tasks
+mkdir roles/ssh-wait-add-instace-to-inventory/handlers roles/ssh-wait-add-instace-to-inventory/tasks
+mkdir roles/update-with-new-ec2-parameters/handlers roles/update-with-new-ec2-parameters/tasks
+mkdir roles/ec2-instance-update/handlers roles/ec2-instance-update/tasks
+mkdir roles/create-swap-space/handlers roles/create-swap-space/tasks
+mkdir roles/ec2-instance-docker-icinga2-requirement/handlers roles/ec2-instance-docker-icinga2-requirement/tasks
+mkdir roles/ec2-instance-timezone-localtime/handlers roles/ec2-instance-timezone-localtime/tasks
+mkdir roles/ec2-instance-docker-installtion/handlers roles/ec2-instance-docker-installtion/tasks
+mkdir roles/ec2-instance-icinga2-installation/handlers roles/ec2-instance-icinga2-installation/tasks
+mkdir roles/amazon-s3-cronjob-conf/handlers roles/amazon-s3-cronjob-conf/tasks
+mkdir roles/clone-ubuntu-server-dockerfile/handlers roles/clone-ubuntu-server-dockerfile/tasks
+mkdir roles/mysqlserver-icinga2-client/handlers roles/mysqlserver-icinga2-client/tasks
 mkdir roles/webserver-icinga2-client/handlers  roles/webserver-icinga2-client/tasks
+mkdir roles/ec2-instance-awscli/handlers roles/ec2-instance-awscli/tasks
+mkdir roles/icingaweb2-configuraion/handlers roles/icingaweb2-configuraion/tasks
+
 
 rm -rf roles/mysqlserver-icinga2-client && mkdir roles/mysqlserver-icinga2-client
 
@@ -18,7 +33,25 @@ rm -rf backup_scripts  > /dev/null 2>&1 && mkdir backup_scripts
 rm -rf vars  > /dev/null 2>&1 && mkdir vars 
 
 #Creating/recreating deployment files and scripts
-touch /vars/ec2_secrets.yml
+cat <<'EOF' >  /vars/ec2_secrets.yml
+
+# prefix for naming
+prefix: staging
+ec2_access_key: xxxxxxxxxxxxxx # add your value
+ec2_secret_key: xxxxxxxxxxxxxx # add your value
+ec2_region: us-west-2
+ec2_image: ami-6635cd06
+#ec2_image: ami-efd0428f
+ec2_instance_type: t2.micro
+ec2_keypair: xhshuyeuii  # add your value xhshuyeuii.pem
+ec2_security_group: crossovericinga
+ec2_instance_count: 1
+ec2_vol_size: 25
+ec2_tag: mioansible2
+#ec2_volume_size: 26
+wait_for_port: 22
+
+EOF
 
 cat <<'EOF' >  create_icinga2db.sh
 #!/bin/bash
